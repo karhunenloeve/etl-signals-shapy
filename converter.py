@@ -13,6 +13,7 @@ from zipfile import ZipFile
 import pandas as pd
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 
 
 
@@ -27,7 +28,7 @@ def zip_to_csv(path):
     into a .csv file. This will create both a .sql and a .csv file
     :param path: the path of the file, that is to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with ZipFile(filename, 'r') as zip:
         zip.extractall()
@@ -42,7 +43,7 @@ def zip_to_npy(path):
     into a .numpy file. This will create both a .sql and a .numpy file
     :param path: the path of the file, that is to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with ZipFile(filename, 'r') as zip:
         zip.extractall()
@@ -57,31 +58,28 @@ def sql_to_csv(path):
     in a single .p pickle list
     :param path: the path of the file that is to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
-    oldfile = open(filename, 'r')
-    newfilename = filename[:-3]
-    newfile = open(newfilename + 'csv', 'w')
-    content = oldfile.readlines()
-    data = []
-    picklelist = []
-    for line in content:
-        if(line.startswith('I')):
-            line = line.split('(')
-            line = line[1]  # cuts of the Insert part of the sql statement
-            line = line[:-3]  # cuts of the ");\n" end of the sql statement
-            line.append("\n") 
-            line = line.replace("'", "")
-            data.append(line)
-        else:
-            picklelist.append(line)
+    with open(filename, 'r') as oldfile:
+        newfilename = filename[:-3]
+        with open(newfilename + 'csv', 'w') as newfile:
+            content = oldfile.readlines()
+            data = []
+            picklelist = []
+            for line in content:
+                if(line.startswith('I')):
+                    line = line.split('(')
+                    line = line[1]  # cuts of the Insert part of the sql statement
+                    line = line[:-3]  # cuts of the ");\n" end of the sql statement
+                    line += "\n" 
+                    line = line.replace("'", "")
+                    data.append(line)
+                else:   
+                    picklelist.append(line)
 
-        write = csv.writer(newfile, delimeter=',', quoting=csv.QUOTE_ALL)
-        write.writerow(data)
-        pickle.dump(picklelist, open((newfilename + 'p'),'wb'))
-        oldfile.close()
-        newfile.close()
-
+                write = csv.writer(newfile, delimiter=',', quoting=csv.QUOTE_ALL)
+                write.writerow(data)
+                pickle.dump(picklelist, open((newfilename + 'p'),'wb'))
 
 def sql_to_npy(path):
     """
@@ -91,28 +89,27 @@ def sql_to_npy(path):
     Additional information is also saved in a single .p pickle list
     :param path: the path of the file that is to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
-    oldfile = open(filename, 'r')
-    newfilename = filename[:-3]
-    content = oldfile.readlines()
-    data = []
-    picklelist = []
-    for line in content:
-        if(line.startswith("I")):
-            line = line.split("(")
-            line = line[1]  # cuts of the Insert part of the sql statement
-            line = line[:-3]  # cuts of the ");\n" end of the sql statement
-            line.append("\n")
-            line = line.replace("'", "")
-            data.append(line)
-        else:
-            picklelist.append(line)
-    nparray = np.genfromtxt(data, delimeter=',',
-                            missing_values='')
-    np.save(newfilename + 'npy', nparray)
-    pickle.dump(picklelist, open(newfilename + "p","wb"))
-    oldfile.close()
+    with open(filename, 'r') as oldfile:
+        newfilename = filename[:-3]
+        content = oldfile.readlines()
+        data = []
+        picklelist = []
+        for line in content:
+            if(line.startswith("I")):
+                line = line.split("(")
+                line = line[1]  # cuts of the Insert part of the sql statement
+                line = line[:-3]  # cuts of the ");\n" end of the sql statement
+                line += "\n"
+                line = line.replace("'", "")
+                data.append(line)
+            else:
+                picklelist.append(line)
+        nparray = np.genfromtxt(data, delimeter=',',
+                                missing_values='')
+        np.save(newfilename + 'npy', nparray)
+        pickle.dump(picklelist, open(newfilename + "p","wb"))
 
 
 def csv_to_sql(path):
@@ -123,21 +120,19 @@ def csv_to_sql(path):
     in order to work
     :param path: this is the path of the .csv file to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
-    oldfile = open(path, 'r')
-    newfilename = filename[:-3]
-    picklelist = pickle.load(open(newfilename + "p","rb"))
-    newfile = open(oldfile, 'w')
-    newfile.writelines(picklelist)
-    content = oldfile.readlines()
-    table = picklelist[0]
-    table = table[table.rfind(" ") + 1:-1]
-    for line in content:
-        line.replace(",", "','")
-        newfile.write("INSERT INTO %s VALUES('%s');\n", table, line)
-    newfile.close()
-    oldfile.close()
+    with open(path, 'r') as oldfile:
+        newfilename = filename[:-3]
+        picklelist = pickle.load(open(newfilename + "p","rb"))
+        with open(oldfile, 'w') as newfile:
+            newfile.writelines(picklelist)
+            content = oldfile.readlines()
+            table = picklelist[0]
+            table = table[table.rfind(" ") + 1:-1]
+            for line in content:
+                line.replace(",", "','")
+                newfile.write("INSERT INTO %s VALUES('%s');\n", table, line)
 
 
 def csv_to_npy(path):
@@ -147,7 +142,7 @@ def csv_to_npy(path):
     this .npy file has the same location and name as the .csv file
     :param path: the path of the file that is to be converted
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     newfilename = filename[:-3] + 'npy'
     data = np.genfromtxt(path, delimeter=',',
@@ -156,20 +151,20 @@ def csv_to_npy(path):
 
 
 def npy_to_sql(path):  # TODO idee erst zu csv dann zu sql
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
+
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
-    newfile = open(filename[:-3] + 'sql', 'w')
-    picklelist = pickle.load(open(filename[:-3] + "p","rb"))
-    newfile.writelines(picklelist)
-    table = picklelist[0]
-    table = table[table.rfind(" ") + 1:-1]
-    for line in np_array:
-        newfile.write("INSERT INTO %s VALUES(", table)
-        for value in line:
-            newfile.write("'%s'", value)
-        newfile.write(");\n")
-    newfile.close()
+    with open(filename[:-3] + 'sql', 'w') as newfile:
+        picklelist = pickle.load(open(filename[:-3] + "p","rb"))
+        newfile.writelines(picklelist)
+        table = picklelist[0]
+        table = table[table.rfind(" ") + 1:-1]
+        for line in np_array:
+            newfile.write("INSERT INTO %s VALUES(", table)
+            for value in line:
+                newfile.write("'%s',", value) #Problem Komma am Ende
+            newfile.write(");\n")
 
 def npy_to_csv(path):
     """
@@ -178,22 +173,42 @@ def npy_to_csv(path):
     and saves it at the same location with the same name as the .npy file
     :param path: the path of the .npy file
     """
-    os.chdir(path + '/../')
+    os.chdir(os.path.dirname(path))
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
-    pd.Dataframe(np_array).to_csv(filename[:-3] + 'csv', index=False) 
+    pd.Dataframe(np_array).to_csv(filename[:-3] + 'csv', index=False)
+
+def gen_GAF(path):
+    """
+    *generates a Gramian Angular Field from a .npy file*
+    """
+    os.chdir(os.path.dirname(path))
+    data = np.load(path)
+    data = data[:,3] #Nur fuer Testzwecke
+    min_ = np.amin(data)
+    max_ = np.amax(data)
+    scaled_data = (2*serie - max_ -min_)/(max_ - min_)  #scaliert auf Intervall von [-1;1]
+    scaled_data = np.where(scaled_data >= 1., 1., scaled_data)
+    scaled_data = np.where(scaled_data <= -1., -1., scaled_data)
+    phi = np.arccos(scaled_data)
+    r=np.linspace(0,1, len(scaled_data))
+    gaf = tabulate(phi, phi, cos_sum)
+    return (gaf, phi, r, scaled_data)
+
+def false_input(path):
+    print("this is an invalid option")
 
 def switchoption(n,path):
         switcher = {
-        1: zip_to_csv(path),
-        2: zip_to_npy(path),
-        3: sql_to_csv(path),
-        4: sql_to_npy(path),
-        5: csv_to_sql(path),
-        6: csv_to_npy(path),
+            1: zip_to_csv,
+            2: zip_to_npy,
+            3: sql_to_csv,
+            4: sql_to_npy,
+            5: csv_to_sql,
+            6: csv_to_npy,
         }
-        function = switcher.get(n,lambda: " is an invalid option")
-        function()
+        function = switcher.get(n,false_input)
+        function(path)
 
 def main():
         path = input("enter path:\n")
@@ -203,7 +218,7 @@ def main():
         print("sql_to_npy(4) \n")
         print("csv_to_sql(5) \n")
         print("csv_to_npy(6) \n")
-        n = input("what do you want to do:")
+        n = int(input("what do you want to do:"))
         switchoption(n,path)
 
 
