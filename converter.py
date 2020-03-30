@@ -72,6 +72,7 @@ def sql_to_csv(path):
                     line = line.split('(')
                     line = line[1]  # cuts of the Insert part of the sql statement
                     line = line[:-3]  # cuts of the ");\n" end of the sql statement
+                    line = line.replace("'","")
                     data.append(line)
                 else:   
                     picklelist.append(line)
@@ -106,8 +107,7 @@ def sql_to_npy(path):
                 data.append(line)
             else:
                 picklelist.append(line)
-        nparray = np.genfromtxt(data, delimiter="|",
-                                missing_values='')
+        nparray = np.genfromtxt(data,dtype=None,delimiter=',',missing_values='')
         np.save(newfilename + 'npy', nparray)
         pickle.dump(picklelist, open(newfilename + "p","wb"))
 
@@ -132,11 +132,10 @@ def csv_to_sql(path):
         with open(newfilename+ "sql", "w") as newfile:
             newfile.writelines(picklelist)
             for line in reader:
-                newfile.write("INSERT INTO ")
-                newfile.write(table)
-                newfile.write(" VALUES(")
-                newfile.write(''.join(line))
-                newfile.write(");\n")
+                line=''.join(line)
+                line = line.replace(",","','")
+                newfile.write("INSERT INTO %s VALUES('" %table)
+                newfile.write("%s');\n" % line)
 
 
 def csv_to_npy(path):
@@ -145,18 +144,16 @@ def csv_to_npy(path):
     This function creates a new .npy file with the data of the .csv file
     this .npy file has the same location and name as the .csv file
     :param path: the path of the file that is to be converted
-    """#Problem die Zeiten werden gelöscht
+    """
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     newfilename = filename[:-3] + 'npy'
-    data = np.genfromtxt(path, delimiter=',',
-                         missing_values='|')
+    data = np.genfromtxt(path, dtype=None,delimiter=',',missing_values='')
     np.save(newfilename,data)
 
 
 def npy_to_sql(path):  # TODO idee erst zu csv dann zu sql
     os.chdir(os.path.dirname(path))
-
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
     with open(filename[:-3] + 'sql', 'w') as newfile:
@@ -165,9 +162,12 @@ def npy_to_sql(path):  # TODO idee erst zu csv dann zu sql
         table = picklelist[0]
         table = table[table.rfind(" ") + 1:-1]
         for line in np_array:
-            newfile.write("INSERT INTO %s VALUES(", table)
+            newfile.write("INSERT INTO %s VALUES(" %table)
+            data = ''
             for value in line:
-                newfile.write("'%s',", value) #Problem Komma am Ende
+                data +="'"+"'"
+            data.replace("''","','")
+            newfile.write(data)
             newfile.write(");\n")
 
 def npy_to_csv(path):
@@ -181,7 +181,7 @@ def npy_to_csv(path):
     os.chdir(os.path.dirname(path))
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
-    pd.DataFrame(np_array).to_csv(filename[:-3] + 'csv', index=False,header=False,quoting=csv.QUOTE_ALL,quotechar="'")
+    pd.DataFrame(np_array).to_csv(filename[:-3] + 'csv', index=False,header=False,sep = ',',index_label = False,quoting = csv.QUOTE_NONE)
 
 def gen_GAF(path):
     """
