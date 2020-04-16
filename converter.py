@@ -15,6 +15,11 @@ import numpy as np
 import pickle
 import typing
 import math
+import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import ImageGrid
+from pyts.image import GramianAngularField as GAF
+
 
 
 
@@ -30,6 +35,12 @@ def zip_to_csv(path:str):
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file, that is to be converted
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='zip'):
+        print("this is not a zip file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with ZipFile(filename, 'r') as zip:
@@ -46,6 +57,12 @@ def zip_to_npy(path:str):
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file, that is to be converted
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='zip'):
+        print("this is not a zip file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with ZipFile(filename, 'r') as zip:
@@ -53,7 +70,7 @@ def zip_to_npy(path:str):
     sql_to_npy(path[:-4])
 
 
-def sql_to_csv(path:str,delimiter:str='\n',quotechar='#'):
+def sql_to_csv(path:str,delimiter:str='\n'):
     """
     **Convert a single .sql file into a .csv file**
     this function takes the path to a .sql file and saves the data of Insert statements 
@@ -61,7 +78,14 @@ def sql_to_csv(path:str,delimiter:str='\n',quotechar='#'):
     in a single .p pickle list
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file that is to be converted
+    :param delimiter: the character inserted after a line of data, default: '\n'
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='sql'):
+        print("this is not an sql file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with open(filename, 'r') as oldfile:
@@ -79,7 +103,7 @@ def sql_to_csv(path:str,delimiter:str='\n',quotechar='#'):
                 else:   
                     picklelist.append(line)
 
-            write = csv.writer(newfile,delimiter=delimiter,quotechar=quotechar)
+            write = csv.writer(newfile,delimiter=delimiter)
             write.writerow(data)
             pickle.dump(picklelist, open((filename[:-3] + 'p'),'wb'))
 
@@ -91,10 +115,18 @@ def sql_to_npy(path:str,delimiter:str=',',missing_values:str=''):
     Additional information is also saved in a single .p pickle list
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file that is to be converted
+    :param delimiter: the character used for separating data values from each other, default: ','
+    :param missing_values: the string used instead of missing data, default: ''
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!="sql"):
+        print("this is not an sql file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
-    with open(filename, 'r') as oldfile:
+    with open(filename, "r") as oldfile:
         newfilename = filename[:-3]
         content = oldfile.readlines()
         data = []
@@ -104,17 +136,18 @@ def sql_to_npy(path:str,delimiter:str=',',missing_values:str=''):
                 line = line.split("(")
                 line = line[1]  # cuts of the Insert part of the sql statement
                 line = line[:-3]  # cuts of the ");\n" end of the sql statement
-                line += "\n"
+                line +="\n"
                 line = line.replace("'","")
                 data.append(line)
             else:
                 picklelist.append(line)
-        nparray = np.genfromtxt(data,dtype=None,delimiter=delimiter,missing_values=missing_values, encoding = 'cp1252')
-        np.save(newfilename + 'npy', nparray)
+        nparray = np.genfromtxt(data,dtype=None,delimiter=delimiter,missing_values=missing_values, encoding = 'ASCII')
+        print(nparray)
+        np.save(newfilename + "npy", nparray)
         pickle.dump(picklelist, open(newfilename + "p","wb"))
 
 
-def csv_to_sql(path:str,delimiter:str='\n',quotechar:str='#'):
+def csv_to_sql(path:str,delimiter:str='\n'):
     """
     **Convert a single .csv file into a .sql file**
     This function creates a new .sql file with insert the data specified in the .csv file
@@ -122,7 +155,14 @@ def csv_to_sql(path:str,delimiter:str='\n',quotechar:str='#'):
     in order to work
     THIS FUNCTION WORKS AS INTENTED
     :param path: this is the path of the .csv file to be converted
+    :param delimiter: the character added after a line of data, default: '\n'
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='csv'):
+        print("this is not a csv file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     with open(path, newline='') as oldfile:
@@ -130,7 +170,7 @@ def csv_to_sql(path:str,delimiter:str='\n',quotechar:str='#'):
         picklelist = pickle.load(open(newfilename + "p","rb"))
         table = picklelist[0]
         table = table[table.rfind(" ") + 1:-1]
-        reader = csv.reader(oldfile,delimiter=delimiter,quotechar=quotechar)
+        reader = csv.reader(oldfile,delimiter=delimiter)
         with open(newfilename+ "sql", "w") as newfile:
             newfile.writelines(picklelist)
             for line in reader:
@@ -140,22 +180,36 @@ def csv_to_sql(path:str,delimiter:str='\n',quotechar:str='#'):
                 newfile.write("%s');\n" % line)
 
 
-def csv_to_npy(path:str,delimiter:str=',',missing_value:str=''):
+def csv_to_npy(path:str,delimiter:str=',',missing_values:str=''):
     """
     **Convert a single .csv file into a .npy file**
     This function creates a new .npy file with the data of the .csv file
     this .npy file has the same location and name as the .csv file
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file that is to be converted
+    :param delimiter: the char in between to data sets, default: ','
+    :param value: the String with wich missing value is interpreted, default: ''
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='csv'):
+        print("this is not a csv file")
+        return
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     newfilename = filename[:-3] + 'npy'
-    data = np.genfromtxt(path, dtype=None,delimiter=delimiter,missing_values=missing_values,encoding = 'cp1252')
+    data = np.genfromtxt(path, dtype=None,delimiter=delimiter,missing_values=missing_values,encoding = 'ASCII')
     np.save(newfilename,data)
 
 
 def npy_to_sql(path:str):
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='npy'):
+        print("this is not an npy file")
+        return
     os.chdir(os.path.dirname(path))
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
@@ -173,57 +227,78 @@ def npy_to_sql(path:str):
             newfile.write(data)
             newfile.write(");\n")
 
-def npy_to_csv(path:str,delimiter:str='\n',quotechar:str='#'):
+def npy_to_csv(path:str):
     """
     **Convert a single .npy file into a .csv file**
     this function creates a new .csv file from the given .npy file
     and saves it at the same location with the same name as the .npy file
     :param path: the path of the .npy file
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+        return
+    if(path[-3:]!='npy'):
+        print("this is not an npy file")
+        return
     os.chdir(os.path.dirname(path))
     np_array = np.load(path, 'r+')
     filename = ntpath.basename(path)
-    pd.DataFrame(np_array).to_csv(filename[:-3] + 'csv', index=False,header=False,index_label = False,quoting = csv.QUOTE_NONE, encoding = 'cp1252')
-    """
-    data = []
-    with open(filename[:-3] + 'csv',mode='r',newline='') as infile:
-        reader = csv.reader(infile,delimiter=delimiter,quotechar=quotechar,quoting=csv.QUOTE_NONE)
-        for line in reader:
-            line[0]=""
-            data.append(line)
-    with open(filename[:-3] + 'csv',mode='w',newline='') as outfile:
-        write = csv.writer(outfile,delimiter=delimiter,quotechar=quotechar,quoting=csv.QUOTE_NONE)
-        write.writerow(data)
-    """
+    pd.DataFrame(np_array).to_csv(filename[:-3] + 'csv', index=False,header=False,index_label = False,quoting = csv.QUOTE_NONE, encoding = 'ASCII')
 
-def gen_GAF(path:str): #TODO this is the function currently worked on
+def gen_GAF(path:str):
     """
-    *generates a Gramian Angular Field from a .npy file*
+    This function is responsible for getting the input from the user,
+    to either generate a Gramian Angular Summation or Gramian Angular Difference Field
+    :param path: the location of the .npy file
     """
+    if(not(os.path.isfile(path))):
+        print("this path does not lead to a file")
+
+        return
+    if(path[-3:]!='npy'):
+        print("this is not an npy file")
+        return
     os.chdir(os.path.dirname(path))
-    data = np.load(path)
-    data = data[:,3] #Nur fuer Testzwecke
-    min_ = np.amin(data)
-    max_ = np.amax(data)
-    scaled_data = (2*serie - max_ -min_)/(max_ - min_)  #scaliert auf Intervall von [-1;1]
-    scaled_data = np.where(scaled_data >= 1., 1., scaled_data)
-    scaled_data = np.where(scaled_data <= -1., -1., scaled_data)
-    phi = np.arccos(scaled_data)
-    r=np.linspace(0,1, len(scaled_data))
-    gaf = tabulate(phi, phi, cos_sum)
-    return (gaf, phi, r, scaled_data)
+    data = np.load(path, encoding = 'ASCII')
+    column = int(input("choose the column of the data you provided, which you want to use as your time series:\n"))
+    data = data[:,column]
+    size = input("enter the size of the image you want: (default 1)\n")
+    scaling = int(input("enter if the data should be scaled(1) or not(2):\n"))
+    if(scaling == 1):
+        sample_range = input("enter the range for your data to be scaled to:\n")
+    else:
+        sample_range=None
+    method = int(input("Enter if you either want a Summation field(1) or a Difference field(2):\n"))
+    if(method == 1):
+        method = 'summation'
+    else:
+        method='difference'
+    gen_GAF_exec(data, size, sample_range, method)
 
-def tabulate(x, y, f):
-    """Return a table of f(x, y). Useful for the Gram-like operations."""
-    return np.vectorize(f)(*np.meshgrid(x, y, sparse=True))
 
-def cos_sum(a,b):
-    """this function is used for tabulate to calculate the cosin sum"""
-    return math.cos(a+b)
 
+
+def gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = (-1,1), method:str = 'summation'): #TODO this is the function currently worked on
+    """
+    **generates a Gramian Angular Field from a .npy file**
+    this function scales a time series given in form of a single column
+    of a .npy file and uses this scaled time series to construct a Gramian Angular Field
+    :param path: the location of the .npy file
+    """
+
+    #transform the data into a Gramian Angular Field
+    gaf = GAF(image_size=size,sample_range=sample_range,method=method)
+    data_gaf = gaf.fit_transform(data)
+    plt.imshow(data_gaf,cmap='rainbow',origin='lower')
+    plt.show()
 
 def false_input(path:str):
     print("this is an invalid option")
+    main()
+
+def exit(path:str):
+    print("thank you for using shapy, the converter of your choice")
+
 
 def switchoption(n:int,path:str):
         switcher = {
@@ -236,12 +311,14 @@ def switchoption(n:int,path:str):
             7: npy_to_sql,
             8: npy_to_csv,
             9: gen_GAF,
+            10:exit,
         }
         function = switcher.get(n,false_input)
         function(path)
 
 def main():
         path = input("enter path:\n")
+        print("to exit (0)\n")
         print("zip_to_csv(1)\n")
         print("zip_to_npy(2)\n")
         print("sql_to_csv(3)\n")
@@ -253,6 +330,8 @@ def main():
         print("gen_GAF(9)\n")
         n = int(input("what do you want to do:"))
         switchoption(n,path)
+
+
 
 if __name__ == "__main__":
     main()
