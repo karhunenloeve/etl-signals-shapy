@@ -2,12 +2,14 @@
 **Authors:** Leo Turowski, Noah Becker & Luciano Melodia.
 
 A minimal package for quick data management.
-#Contents
+
+# Contents
+
 1. [Converting Sql statements](#Converting Sql statements)
-	[zip_to_csv](#zip_to_csv)
-	[zip_to_npy](#zip_to_npy)
-	[sql_to_csv](#sql_to_csv)
-	[sql_to_npy](sql_to_npy)
+	- [zip_to_csv](#zip_to_csv)
+	- [zip_to_npy](#zip_to_npy)
+	- [sql_to_csv](#sql_to_csv)
+	- [sql_to_npy](sql_to_npy)
 2.[Converting csv files](#Converting csv files)
 	[csv_to_sql](#csv_to_sql)
 	[csv_to_npy](#csv_to_npy)
