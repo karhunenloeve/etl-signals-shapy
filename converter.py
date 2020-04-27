@@ -35,6 +35,7 @@ def zip_to_csv(path:str):
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file, that is to be converted
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -57,6 +58,7 @@ def zip_to_npy(path:str):
     THIS FUNCTION WORKS AS INTENDED
     :param path: the path of the file, that is to be converted
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -80,6 +82,7 @@ def sql_to_csv(path:str,delimiter:str='\n'):
     :param path: the path of the file that is to be converted
     :param delimiter: the character inserted after a line of data, default: '\n'
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -107,7 +110,7 @@ def sql_to_csv(path:str,delimiter:str='\n'):
             write.writerow(data)
             pickle.dump(picklelist, open((filename[:-3] + 'p'),'wb'))
 
-def sql_to_npy(path:str,delimiter:str=',',missing_values:str=''):
+def sql_to_npy(path:str,delimiter:str= ',' ,missing_values:str=''):
     """
     **Convert a single .sql file into a .npy file**
     This function creates a new .npy file at the same location and with the same name
@@ -118,6 +121,7 @@ def sql_to_npy(path:str,delimiter:str=',',missing_values:str=''):
     :param delimiter: the character used for separating data values from each other, default: ','
     :param missing_values: the string used instead of missing data, default: ''
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -136,13 +140,13 @@ def sql_to_npy(path:str,delimiter:str=',',missing_values:str=''):
                 line = line.split("(")
                 line = line[1]  # cuts of the Insert part of the sql statement
                 line = line[:-3]  # cuts of the ");\n" end of the sql statement
-                line +="\n"
                 line = line.replace("'","")
                 data.append(line)
             else:
                 picklelist.append(line)
-        nparray = np.genfromtxt(data,dtype=None,delimiter=delimiter,missing_values=missing_values, encoding = 'ASCII')
-        print(nparray)
+        nparray = np.genfromtxt(data,dtype=None,delimiter=delimiter,missing_values=missing_values, encoding= 'ASCII')
+        nparray=nparray.reshape((1,nparray.size))
+        print(nparray[0,0][2])
         np.save(newfilename + "npy", nparray)
         pickle.dump(picklelist, open(newfilename + "p","wb"))
 
@@ -157,6 +161,7 @@ def csv_to_sql(path:str,delimiter:str='\n'):
     :param path: this is the path of the .csv file to be converted
     :param delimiter: the character added after a line of data, default: '\n'
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -180,7 +185,7 @@ def csv_to_sql(path:str,delimiter:str='\n'):
                 newfile.write("%s');\n" % line)
 
 
-def csv_to_npy(path:str,delimiter:str=',',missing_values:str=''):
+def csv_to_npy(path:str,delimiter:str='\n',missing_values:str=''):
     """
     **Convert a single .csv file into a .npy file**
     This function creates a new .npy file with the data of the .csv file
@@ -190,6 +195,7 @@ def csv_to_npy(path:str,delimiter:str=',',missing_values:str=''):
     :param delimiter: the char in between to data sets, default: ','
     :param value: the String with wich missing value is interpreted, default: ''
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -204,6 +210,7 @@ def csv_to_npy(path:str,delimiter:str=',',missing_values:str=''):
 
 
 def npy_to_sql(path:str):
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -234,6 +241,7 @@ def npy_to_csv(path:str):
     and saves it at the same location with the same name as the .npy file
     :param path: the path of the .npy file
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
         return
@@ -251,6 +259,7 @@ def gen_GAF(path:str):
     to either generate a Gramian Angular Summation or Gramian Angular Difference Field
     :param path: the location of the .npy file
     """
+    path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
 
@@ -260,12 +269,12 @@ def gen_GAF(path:str):
         return
     os.chdir(os.path.dirname(path))
     data = np.load(path, encoding = 'ASCII')
-    column = int(input("choose the column of the data you provided, which you want to use as your time series:\n"))
-    data = data[:,column]
-    size = input("enter the size of the image you want: (default 1)\n")
+    size = int(input("enter the size of the image you want: (default 1)\n"))
     scaling = int(input("enter if the data should be scaled(1) or not(2):\n"))
     if(scaling == 1):
-        sample_range = input("enter the range for your data to be scaled to:\n")
+        min = int(input("enter the minimum\n"))
+        max = int(input("enter the maximum\n"))
+        sample_range = (min,max)
     else:
         sample_range=None
     method = int(input("Enter if you either want a Summation field(1) or a Difference field(2):\n"))
@@ -331,7 +340,12 @@ def main():
         n = int(input("what do you want to do:"))
         switchoption(n,path)
 
-
+def checkpath(path:str):
+    path=path.replace('"','')
+    path=path.replace("'","")
+    if(os.path.isabs(path)):
+        return path
+    return os.getcwd+path
 
 if __name__ == "__main__":
     main()
