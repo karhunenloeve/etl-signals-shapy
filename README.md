@@ -26,9 +26,9 @@ A minimal package for quick data management.
 	[main](#main)
 	[checkpath](#checkpath)
 
-##Converting Sql statements
+## Converting Sql statements
 
-###zip_to_csv
+### zip_to_csv
 	zip_to_csv(path:str)
 
 	Convert a packaged sql file into a csv file
@@ -38,7 +38,7 @@ A minimal package for quick data management.
 	
 	param path: as the absolute path to the zip file with the sql in it, type str  
 
-###zip_to_npy
+### zip_to_npy
 	zip_to_npy(path:str)
 
 	Convert a packaged sql file into a npy file
@@ -48,7 +48,7 @@ A minimal package for quick data management.
 	
 	param path: as the absolute path to the zip file with the sql in it, type str  
 
-###sql_to_csv
+### sql_to_csv
 	sql_to_csv(path:str, delimiter:str = '\n')
 
 	Convert a set of INSERT statement into csv format
@@ -61,7 +61,7 @@ A minimal package for quick data management.
 	param path: as the absolute path to the sql file, type str  
 	param delimiter: as the delimiter at the end of each line, type str  
 
-###sql_to_npy
+### sql_to_npy
 	sql_to_npy(path:str, delimiter:str = ',', missing_values:str = '')
 
 	Convert a set of INSERT statement into a numpy array
@@ -75,9 +75,9 @@ A minimal package for quick data management.
 	param delimiter: as the string used in the sql file to separate the data, type str  
 	param missing_values: the string used for missing data, type str  
 
-##Converting csv files
+## Converting csv files
 
-###csv_to_sql
+### csv_to_sql
 	csv_to_sql(path:str, delimiter:str = '\n')
 
 	Convert a csv file into a set of INSERT statements
@@ -91,7 +91,7 @@ A minimal package for quick data management.
 	param delimiter: as the string used to detect the different data sets, type str  
 
 
-###csv_to_npy
+### csv_to_npy
 	csv_to_npy(path:str, delimiter:str = '\n'; missing_values:str = '')
 
 	Convert a csv file into a numpy array representation
@@ -103,9 +103,9 @@ A minimal package for quick data management.
 	param delimiter: the string used to determine the rows of the numpy array, type str  
 	param missing_values: as the string used to represent missing data, type str  
 
-##Converting npy files
+## Converting npy files
 
-###npy_to_sql
+### npy_to_sql
 	npy_to_sql(path:str)
 
 	Convert a npy file into a set of INSERT statements
@@ -115,7 +115,7 @@ A minimal package for quick data management.
 
 	param path: as the absolute path to the npy file, type str  
 
-###npy_to_csv
+### npy_to_csv
 	npy_to_csv(path:str)
 
 	Converts a npy file into a csv representation of the data
@@ -124,9 +124,9 @@ A minimal package for quick data management.
 	
 	param path: as the absolute path to the npy file, type str  
 
-##Interpretation of data
+## Interpretation of data
 	
-###gen_GAF
+### gen_GAF
 	gen_GAF(path:str)
 
 	Generate a Gramian Angular Field with User input
@@ -137,7 +137,7 @@ A minimal package for quick data management.
 	
 	param path: as the absolute path to the npy file, type str  
 
-###gen_GAF_exec
+### gen_GAF_exec
 	gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
 	
 	Generate a Gramian angular Field
@@ -152,9 +152,9 @@ A minimal package for quick data management.
 	param sample_range: as the range the data should be scaled to, type None or tuple  
 	param method: as the type of field it should be, type 'summation' or 'difference'  
 
-##Quality of life functions
+## Quality of life functions
 
-###false_ input
+### false_ input
 	false_imput(path:str)
 
 	Print error and return to main
@@ -163,7 +163,7 @@ A minimal package for quick data management.
 	
 	param path: this parameter is only there so the function has a proper form, type str  
 				
-###exit
+### exit
 	exit(path:str)
 
 	Print Message and end program
@@ -171,7 +171,7 @@ A minimal package for quick data management.
 	This function prints a message to the console and ends the program
 	param path: this parameter is only there so the function has a proper form, type str  
 
-###switchoption
+### switchoption
 	switchoption(n:int , path:str)
 
 	Invoke a function
@@ -182,7 +182,7 @@ A minimal package for quick data management.
 	param path: this is the path to the file used for the function to be invoked, type str  
 
 
-###main
+### main
 	main()
 
 	Get User input and invoke functions
@@ -190,7 +190,7 @@ A minimal package for quick data management.
 	this function uses the console to get input from the user, as to which function
 	should be invoked and where to find the coresponding file
 
-###checkpath
+### checkpath
 	checkpath(path:str)->str
 
 	check the path for relativity
