@@ -25,13 +25,13 @@ A minimal package for quick data management.
 	[switchoption](#switchoption)
 	[main](#main)
 	[checkpath](#checkpath)
-
+  
 ## Converting Sql statements
 
 ### zip_to_csv
 	zip_to_csv(path:str)
 
-	Convert a packaged sql file into a csv file
+	**Convert a packaged sql file into a csv file**
 
 	This function unpacks the given zip file at its location and invokes the given sql_to_csv
 	function on the sql file, with the same name as the zip file
@@ -41,7 +41,7 @@ A minimal package for quick data management.
 ### zip_to_npy
 	zip_to_npy(path:str)
 
-	Convert a packaged sql file into a npy file
+	**Convert a packaged sql file into a npy file**
 
 	This function unpacks the given zip file at its location and invokes the given sql_to_npy
 	function on the sql file, with the same name as the zip file
@@ -51,7 +51,7 @@ A minimal package for quick data management.
 ### sql_to_csv
 	sql_to_csv(path:str, delimiter:str = '\n')
 
-	Convert a set of INSERT statement into csv format
+	**Convert a set of INSERT statement into csv format**
 
 	Extracting the Data from a set of INSERT statements saved in a sql file, this function
 	converts the data into a csv file where every not INSERT line is saved in a separate pickle
@@ -64,7 +64,7 @@ A minimal package for quick data management.
 ### sql_to_npy
 	sql_to_npy(path:str, delimiter:str = ',', missing_values:str = '')
 
-	Convert a set of INSERT statement into a numpy array
+	**Convert a set of INSERT statement into a numpy array**
 
 	Similar to the csv this function also stores unused data in a pickle file and creates
 	a brand new file with the extracted data, this time in an npy format, however this time
@@ -80,7 +80,7 @@ A minimal package for quick data management.
 ### csv_to_sql
 	csv_to_sql(path:str, delimiter:str = '\n')
 
-	Convert a csv file into a set of INSERT statements
+	**Convert a csv file into a set of INSERT statements**
 	
 	This function converts each set of data divided by the given delimiter
 	of a csv file into a INSERT statement it also adds data 
@@ -94,7 +94,7 @@ A minimal package for quick data management.
 ### csv_to_npy
 	csv_to_npy(path:str, delimiter:str = '\n'; missing_values:str = '')
 
-	Convert a csv file into a numpy array representation
+	**Convert a csv file into a numpy array representation**
 
 	This function converts a csv file into a 2-dimensional numpy representation,
 	while every set of data divided by the given delimiter is interpreted as a new row
@@ -108,7 +108,7 @@ A minimal package for quick data management.
 ### npy_to_sql
 	npy_to_sql(path:str)
 
-	Convert a npy file into a set of INSERT statements
+	**Convert a npy file into a set of INSERT statements**
 
 	this function is the reverse function to sql_to_npy and when used in conjuction
 	you end up with the same file in the end as you had in the beginning
@@ -118,7 +118,7 @@ A minimal package for quick data management.
 ### npy_to_csv
 	npy_to_csv(path:str)
 
-	Converts a npy file into a csv representation of the data
+	**Converts a npy file into a csv representation of the data**
 
 	Similar to npy_to_sql this function is the reverse function to csv_to_npy
 	
@@ -129,7 +129,7 @@ A minimal package for quick data management.
 ### gen_GAF
 	gen_GAF(path:str)
 
-	Generate a Gramian Angular Field with User input
+	**Generate a Gramian Angular Field with User input**
 
 	this function gets the input from the user through the console to generate
 	either a Gramian Angular Summation Field or a Gramian Angular Difference Field
@@ -140,7 +140,7 @@ A minimal package for quick data management.
 ### gen_GAF_exec
 	gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
 	
-	Generate a Gramian angular Field
+	**Generate a Gramian angular Field**
 
 	this is the actual function when it comes to generating a Gramian Angular Field
 	out of the data of a numpy array. This function takes different variables to determine
@@ -157,7 +157,7 @@ A minimal package for quick data management.
 ### false_ input
 	false_imput(path:str)
 
-	Print error and return to main
+	**Print error and return to main**
 
 	this function prints an error message to the console and returns to main
 	
@@ -166,7 +166,7 @@ A minimal package for quick data management.
 ### exit
 	exit(path:str)
 
-	Print Message and end program
+	**Print Message and end program**
 
 	This function prints a message to the console and ends the program
 	param path: this parameter is only there so the function has a proper form, type str  
@@ -174,7 +174,7 @@ A minimal package for quick data management.
 ### switchoption
 	switchoption(n:int , path:str)
 
-	Invoke a function
+	**Invoke a function**
 
 	this function invokes one of the funtions of this program corresponding to the n
 	and gives it the path as input
@@ -185,7 +185,7 @@ A minimal package for quick data management.
 ### main
 	main()
 
-	Get User input and invoke functions
+	**Get User input and invoke functions**
 
 	this function uses the console to get input from the user, as to which function
 	should be invoked and where to find the coresponding file
@@ -193,7 +193,7 @@ A minimal package for quick data management.
 ### checkpath
 	checkpath(path:str)->str
 
-	check the path for relativity
+	**check the path for relativity**
 
 	this function removes any quotation from a path and checks if it is relative or absolute
 	it returns a *cleansed* path being the absolute representation of the given path
