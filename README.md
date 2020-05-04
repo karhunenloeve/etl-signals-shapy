@@ -32,7 +32,7 @@ A minimal package for quick data management.
 zip_to_csv(path:str)
 ```
 
-**Convert a packaged sql file into a csv file.**
+**Convert a zipped `sql`-file into a `csv`-file.**
 
 This function unpacks the given zip file at its location and invokes the given sql_to_csv
 function on the sql file, with the same name as the zip file
