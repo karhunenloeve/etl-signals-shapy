@@ -5,7 +5,7 @@ A minimal package for quick data management.
 
 # Contents
 
-1. [Converting Sql statements](#Converting Sql statements)
+1. [Converting Sql statements](# Converting Sql statements)
 	- [zip_to_csv](#zip_to_csv)
 	- [zip_to_npy](#zip_to_npy)
 	- [sql_to_csv](#sql_to_csv)
