@@ -27,16 +27,17 @@ A minimal package for quick data management.
 	[checkpath](#checkpath)
   
 ## Converting Sql statements
-
 ### zip_to_csv
-	zip_to_csv(path:str)
+```python
+zip_to_csv(path:str)
+```
 
-	**Convert a packaged sql file into a csv file**
+**Convert a packaged sql file into a csv file.**
 
-	This function unpacks the given zip file at its location and invokes the given sql_to_csv
-	function on the sql file, with the same name as the zip file
-	
-	param path: as the absolute path to the zip file with the sql in it, type str  
+This function unpacks the given zip file at its location and invokes the given sql_to_csv
+function on the sql file, with the same name as the zip file
+
++ param **path**: as the absolute path to the zip file with the sql in it, type `str`.
 
 ### zip_to_npy
 	zip_to_npy(path:str)
