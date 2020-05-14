@@ -3,7 +3,7 @@
 
 A minimal package for quick data management.
 
-#Contents
+# Contents
 
 1. [Converting Sql statements](#sqlConversion)
 	- [zip_to_csv](#zip_to_csv)
@@ -26,19 +26,19 @@ A minimal package for quick data management.
 	- [main](#main)
 	-[checkpath](#checkpath)
 
-##sqlConversion
+## sqlConversion
 
-###zip_to_csv
-	```python
-	zip_to_csv(path:str)
-	```
+### zip_to_csv
+```python
+zip_to_csv(path:str)
+```
 
-	**Convert a zipped `sql` -file into a `csv` -file**
+**Convert a zipped `sql` -file into a `csv` -file**
 
-	This function unpacks the given zip file at its location and invokes the given sql_to_csv
-	function on the sql file, with the same name as the zip file
+This function unpacks the given zip file at its location and invokes the given sql_to_csv
+function on the sql file, with the same name as the zip file
 	
-	+ param **path**: as the absolute path to the zip file with the sql in it, type `str` 
++ param **path**: as the absolute path to the zip file with the sql in it, type `str` 
 
 ###zip_to_npy
 	```python
