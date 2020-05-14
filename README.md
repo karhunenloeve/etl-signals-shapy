@@ -67,7 +67,7 @@ at the end of each line.
 + param **path**: as the absolute path to the sql file, type `str`  
 + param **delimiter**: as the delimiter at the end of each line, type `str`  
 
-###sql_to_npy
+### sql_to_npy
 ```python
 sql_to_npy(path:str, delimiter:str = ',')
 ```
@@ -100,7 +100,7 @@ as a commentary at the beginning, as to not impede the functionality
 + param **delimiter**: as the string used to detect the different data sets, type `str`  
 
 
-###csv_to_npy
+### csv_to_npy
 ```python
 csv_to_npy(path:str, delimiter:str = ',')
 ```
@@ -153,7 +153,7 @@ from the data of a numpy array using the gen_GAF_exec function
 	
 + param **path**: as the absolute path to the npy file, type `str`  
 
-###gen_GAF_exec
+### gen_GAF_exec
 ```python
 gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
 ```
@@ -182,7 +182,7 @@ this function prints an error message to the console and returns to main
 	
 + param **path**: this parameter is only there so the function has a proper form, type `str`  
 				
-###exit
+### exit
 ```python
 exit(path:str)
 ```
