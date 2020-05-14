@@ -2,65 +2,75 @@
 **Authors:** Leo Turowski, Noah Becker & Luciano Melodia.
 
 A minimal package for quick data management.
-#Contents
-1. [Converting Sql statements](#Converting Sql statements)
-	1. [zip_to_csv](#zip_to_csv)
-	2. [zip_to_npy](#zip_to_npy)
-	3. [sql_to_csv](#sql_to_csv)
-	4. [sql_to_npy](sql_to_npy)
-2. [Converting csv files](#Converting csv files)
-	1. [csv_to_sql](#csv_to_sql)
-	2. [csv_to_npy](#csv_to_npy)
-3. [Converting npy files](#Converting noy files)
-	1. [npy_to_sql](#npy_to_sql)
-	2. [npy_to_csv](#npy_to_csv)
-4. [Interpretation of data](#Interpretation)
-	1. [gen_GAF](#gen_GAF)
-	2. [gen_GAF_exec](#gen_GAF_exec)
-5. [Quality of life functions](#Quality)
-	1. [false_input](#false_input)
-	2. [exit](#exit)
-	3. [switchoption](#switchoption)
-	4. [main](#main)
-	5.[checkpath](#checkpath)
 
-##Converting Sql statements
+#Contents
+
+1. [Converting Sql statements](#sqlConversion)
+	- [zip_to_csv](#zip_to_csv)
+	- [zip_to_npy](#zip_to_npy)
+	- [sql_to_csv](#sql_to_csv)
+	- [sql_to_npy](sql_to_npy)
+2. [Converting csv files](#csvConversion)
+	- [csv_to_sql](#csv_to_sql)
+	- [csv_to_npy](#csv_to_npy)
+3. [Converting npy files](#npyConversion)
+	- [npy_to_sql](#npy_to_sql)
+	- [npy_to_csv](#npy_to_csv)
+4. [Interpretation of data](#Interpretation)
+	- [gen_GAF](#gen_GAF)
+	- [gen_GAF_exec](#gen_GAF_exec)
+5. [Quality of life functions](#Quality)
+	- [false_input](#false_input)
+	- [exit](#exit)
+	- [switchoption](#switchoption)
+	- [main](#main)
+	-[checkpath](#checkpath)
+
+##sqlConversion
 
 ###zip_to_csv
+	```python
 	zip_to_csv(path:str)
+	```
 
-	**Convert a packaged sql file into a csv file**
+	**Convert a zipped `sql` -file into a `csv` -file**
 
 	This function unpacks the given zip file at its location and invokes the given sql_to_csv
 	function on the sql file, with the same name as the zip file
 	
-	param path: as the absolute path to the zip file with the sql in it, type str  
+	+ param **path**: as the absolute path to the zip file with the sql in it, type `str`  
 
 ###zip_to_npy
+	```python
 	zip_to_npy(path:str)
+	```
 
-	**Convert a packaged sql file into a npy file**
+	**Convert a zipped `sql` -file into a `npy` -file**
 
 	This function unpacks the given zip file at its location and invokes the given sql_to_npy
 	function on the sql file, with the same name as the zip file
 	
-	param path: as the absolute path to the zip file with the sql in it, type str  
+	+ param **path**: as the absolute path to the zip file with the sql in it, type `str`  
 
 ###sql_to_csv
+	```python
 	sql_to_csv(path:str, delimiter:str = '\n')
+	```
 
-	**Convert a set of INSERT statement into csv format**
+	**Convert a set of INSERT statement into `csv` format**
 
 	Extracting the Data from a set of INSERT statements saved in a sql file, this function
 	converts the data into a csv file where every not INSERT line is saved in a separate pickle
 	file and the data of the INSERT statements is stored line after line, with the given delimiter
 	at the end of each line.
 
-	param path: as the absolute path to the sql file, type str  
-	param delimiter: as the delimiter at the end of each line, type str  
+	+ param **path**: as the absolute path to the sql file, type `str`  
+	+ param **delimiter**: as the delimiter at the end of each line, type `str`  
 
 ###sql_to_npy
-	sql_to_npy(path:str, delimiter:str = ',', missing_values:str = '')
+	```python
+	sql_to_npy(path:str, delimiter:str = ',')
+	```
 
 	**Convert a set of INSERT statement into a numpy array**
 
@@ -69,63 +79,71 @@ A minimal package for quick data management.
 	the delimiter has to be the delimiter used in the sql file, as well as an additional 
 	missing_values string used to represent missing data
 	
-	param path: as the absolute path to the sql file, type str  
-	param delimiter: as the string used in the sql file to separate the data, type str  
-	param missing_values: the string used for missing data, type str  
+	+ param **path**: as the absolute path to the sql file, type `str`  
+	+ param **delimiter**: as the string used in the sql file to separate the data, type `str`  
 
-##Converting csv files
+##csvConversion
 
 ###csv_to_sql
+	```python
 	csv_to_sql(path:str, delimiter:str = '\n')
+	```
 
-	**Convert a csv file into a set of INSERT statements**
+	**Convert a `csv` file into a set of INSERT statements**
 	
 	This function converts each set of data divided by the given delimiter
 	of a csv file into a INSERT statement it also adds data 
 	stored in a pickle file, with the same name as the csv file,
 	as a commentary at the beginning, as to not impede the functionality
 	
-	param path: as the absolute path to the csv file, type str  
-	param delimiter: as the string used to detect the different data sets, type str  
+	+ param **path**: as the absolute path to the csv file, type `str`  
+	+ param **delimiter**: as the string used to detect the different data sets, type `str`  
 
 
 ###csv_to_npy
-	csv_to_npy(path:str, delimiter:str = '\n'; missing_values:str = '')
+	```python
+	csv_to_npy(path:str, delimiter:str = ',')
+	```
 
-	**Convert a csv file into a numpy array representation**
+	**Convert a `csv` file into a numpy array representation**
 
 	This function converts a csv file into a 2-dimensional numpy representation,
 	while every set of data divided by the given delimiter is interpreted as a new row
 
-	param path: as the absolute path to the csv file, type str  
-	param delimiter: the string used to determine the rows of the numpy array, type str  
-	param missing_values: as the string used to represent missing data, type str  
+	+ param **path**: as the absolute path to the csv file, type `str`  
+	+ param **delimiter**: the string used to determine the rows of the numpy array, type `str`  
 
-##Converting npy files
+##npyConversion
 
 ###npy_to_sql
+	```python
 	npy_to_sql(path:str)
+	```
 
-	**Convert a npy file into a set of INSERT statements**
+	**Convert a `npy` file into a set of INSERT statements**
 
 	this function is the reverse function to sql_to_npy and when used in conjuction
 	you end up with the same file in the end as you had in the beginning
 
-	param path: as the absolute path to the npy file, type str  
+	+ param **path**: as the absolute path to the npy file, type `str`  
 
 ###npy_to_csv
+	```python
 	npy_to_csv(path:str)
+	```
 
-	**Converts a npy file into a csv representation of the data**
+	**Converts a `npy` file into a `csv` representation of the data**
 
 	Similar to npy_to_sql this function is the reverse function to csv_to_npy
 	
-	param path: as the absolute path to the npy file, type str  
+	+ param **path**: as the absolute path to the npy file, type `str`  
 
-##Interpretation of data
+##Interpretation
 	
 ###gen_GAF
+	```python
 	gen_GAF(path:str)
+	```
 
 	**Generate a Gramian Angular Field with User input**
 
@@ -133,11 +151,13 @@ A minimal package for quick data management.
 	either a Gramian Angular Summation Field or a Gramian Angular Difference Field
 	from the data of a numpy array using the gen_GAF_exec function
 	
-	param path: as the absolute path to the npy file, type str  
+	+ param **path**: as the absolute path to the npy file, type `str`  
 
 ###gen_GAF_exec
-	gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
-	
+	```python
+	gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
+	```
+
 	**Generate a Gramian angular Field**
 
 	this is the actual function when it comes to generating a Gramian Angular Field
@@ -145,43 +165,50 @@ A minimal package for quick data management.
 	how the Field should be scaled, what its size should be 
 	and if it is either a summation or difference Field
 	
-	param data: as the content of a npy file , type list  
-	param size: this is the size of the square output image, type int or float  
-	param sample_range: as the range the data should be scaled to, type None or tuple  
-	param method: as the type of field it should be, type 'summation' or 'difference'  
+	+ param **data**: as the content of a npy file , type `list`  
+	+ param **sample_range**: as the range the data should be scaled to, type `None` or `tuple`  
+	+ param **method**: as the type of field it should be, type 'summation' or 'difference'  
 
-##Quality of life functions
+##Quality
 
 ###false_ input
+	```python
 	false_imput(path:str)
+	```
 
 	**Print error and return to main**
 
 	this function prints an error message to the console and returns to main
 	
-	param path: this parameter is only there so the function has a proper form, type str  
+	+ param **path**: this parameter is only there so the function has a proper form, type `str`  
 				
 ###exit
+	```python
 	exit(path:str)
+	```
 
 	**Print Message and end program**
 
 	This function prints a message to the console and ends the program
-	param path: this parameter is only there so the function has a proper form, type str  
+	+ param **path**: this parameter is only there so the function has a proper form, type `str`  
 
 ###switchoption
+	```python
 	switchoption(n:int , path:str)
+	```
 
 	**Invoke a function**
 
 	this function invokes one of the funtions of this program corresponding to the n
 	and gives it the path as input
-	param n: this number specifies which dunction should be invoked, type int  
-	param path: this is the path to the file used for the function to be invoked, type str  
+	+ param **n**: this number specifies which dunction should be invoked, type `int`  
+	+ param **path**: this is the path to the file used for the function to be invoked, type `str`  
 
 
 ###main
+	```python
 	main()
+	```
 
 	**Get User input and invoke functions**
 
@@ -189,12 +216,14 @@ A minimal package for quick data management.
 	should be invoked and where to find the coresponding file
 
 ###checkpath
+	```python
 	checkpath(path:str)->str
+	```
 
 	**check the path for relativity**
 
 	this function removes any quotation from a path and checks if it is relative or absolute
 	it returns a *cleansed* path being the absolute representation of the given path
 
-	param path: the string to be used as a path, type str    
-	return path: the absolute path, type str  
+	+ param **path**: the string to be used as a path, type `str`    
+	+ return **path**: the absolute path, type `str`  
