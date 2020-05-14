@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 from pyts.image import GramianAngularField as GAF
 from numpy.lib import recfunctions as rfn
-
-
+from pyts.datasets import load_gunpoint
+from mpl_toolkits.axes_grid1 import ImageGrid
 
 
 
@@ -103,7 +103,8 @@ def sql_to_csv(path:str,delimiter:str='\n'):
                 if(line.startswith('I')):
                     line = line.split('(')
                     line = line[1]  # cuts of the Insert part of the sql statement
-                    line = line[:-3]  # cuts of the ");\n" end of the sql statement
+                    line = line.split(')')  # cuts of the ");\n" end of the sql statement
+                    line = line[0]
                     line = line.replace("'","")
                     data.append(line)
                 else:   
@@ -113,7 +114,7 @@ def sql_to_csv(path:str,delimiter:str='\n'):
             write.writerow(data)
             pickle.dump(picklelist, open((filename[:-3] + 'p'),'wb'))
 
-def sql_to_npy(path:str,delimiter:str= ',' ,missing_values:str=''):
+def sql_to_npy(path:str,delimiter:str= ','):
     """
 	**Convert a set of INSERT statement into a numpy array**
 
@@ -144,13 +145,13 @@ def sql_to_npy(path:str,delimiter:str= ',' ,missing_values:str=''):
             if(line.startswith("I")):
                 line = line.split("(")
                 line = line[1]  # cuts of the Insert part of the sql statement
-                line = line[:-3]  # cuts of the ");\n" end of the sql statement
+                line = line.split(')')  # cuts of the ");\n" end of the sql statement
+                line = line[0]
                 line = line.replace("'","")
                 data.append(line)
             else:
                 picklelist.append(line)
-        nparray = np.genfromtxt(data,dtype=None,delimiter=delimiter,missing_values=missing_values, encoding= 'ASCII')
-        nparray=nparray.reshape((1,nparray.size))
+        nparray = np.loadtxt(data, dtype=str,delimiter=delimiter,encoding = 'ASCII',ndmin=2)
         np.save(newfilename + "npy", nparray)
         pickle.dump(picklelist, open(newfilename + "p","wb"))
 
@@ -164,7 +165,7 @@ def csv_to_sql(path:str,delimiter:str='\n'):
 	stored in a pickle file, with the same name as the csv file,
 	as a commentary at the beginning, as to not impede the functionality
 	
-	param path: as the absolute path to the csv file, type str  
+	param path: as the absolute path to the csv file, type str 
 	param delimiter: as the string used to detect the different data sets, type str  
     """
     path=checkpath(path)
@@ -191,7 +192,7 @@ def csv_to_sql(path:str,delimiter:str='\n'):
                 newfile.write("%s');\n" % line)
 
 
-def csv_to_npy(path:str,delimiter:str='\n',missing_values:str=''):
+def csv_to_npy(path:str,delimiter:str=','):
     """
 	**Convert a csv file into a numpy array representation**
 
@@ -212,10 +213,7 @@ def csv_to_npy(path:str,delimiter:str='\n',missing_values:str=''):
     os.chdir(os.path.dirname(path))
     filename = ntpath.basename(path)
     newfilename = filename[:-3] + 'npy'
-    data = np.genfromtxt(path, dtype=None,delimiter=delimiter,missing_values=missing_values,encoding = 'ASCII')
-    data=rfn.repack_fields(data)
-    print(np.ndim(data))
-    print(data[5])
+    data = np.loadtxt(path, dtype=str,delimiter=delimiter,encoding = 'ASCII',ndmin=2)
     np.save(newfilename,data)
 
 
@@ -244,18 +242,12 @@ def npy_to_sql(path:str):
         newfile.writelines(picklelist)
         table = picklelist[0]
         table = table[table.rfind(" ") + 1:-1]
-        for column in np_array:
-            for line in column:
-                data=str(line)
-                data=data.replace(" ","")
-                data=data.replace("(","")
-                data=data.replace(")","")
-                data=data.replace("'","")
-                data=data[5:]
-                data=data.replace(",","','")
-                data=data.replace("'NULL'","NULL")
-                newfile.write("INSERT INTO {0} VALUES('{1}');\n".format(table,data))
-        
+        for row in np_array:
+            data = ','.join(row)
+            data += "'"
+            data = data.replace(",","','")
+            data = data.replace("'NULL'","NULL")
+            newfile.write("INSERT INTO {0} VALUES('{1});\n".format(table,data))           
 
 def npy_to_csv(path:str):
     """
@@ -276,16 +268,9 @@ def npy_to_csv(path:str):
     np_array = np.load(path, 'r')
     filename = ntpath.basename(path)
     with open(filename[:-3] + 'csv', 'w') as newfile:
-        for column in np_array:
-            for line in column:
-                data=str(line)
-                data=data.replace(" ","")
-                data=data.replace("(","")
-                data=data.replace(")","")
-                data=data.replace("'","")
-                data=data[5:]
-                data=data.replace("'NULL'","NULL")
-                newfile.write("{0}\n".format(data))
+        for row in np_array:
+            data = ','.join(row)
+            newfile.write("{0}\n".format(data))
         
 
 def gen_GAF(path:str):
@@ -301,38 +286,23 @@ def gen_GAF(path:str):
     path=checkpath(path)
     if(not(os.path.isfile(path))):
         print("this path does not lead to a file")
-
         return
     if(path[-3:]!='npy'):
         print("this is not an npy file")
         return
     os.chdir(os.path.dirname(path))
     np_array = np.load(path, encoding = 'ASCII')
-    i = 0
-    data = np.empty(np_array.shape)
-    for column in np_array:
-        for row in column:
-            data[0][i] = row[1]
-            i = i+1
-    size = int(input("enter the size of the image you want: (default 1)\n"))
-    scaling = int(input("enter if the data should be scaled(1) or not(2):\n"))
-    if(scaling == 1):
-        min = int(input("enter the minimum\n"))
-        max = int(input("enter the maximum\n"))
-        sample_range = (min,max)
-    else:
-        sample_range=None
     method = int(input("Enter if you either want a Summation field(1) or a Difference field(2):\n"))
     if(method == 1):
         method = 'summation'
     else:
         method='difference'
-    gen_GAF_exec(data, size, sample_range, method)
+    gen_GAF_exec(np_array,(-1,1), method)
 
 
 
 
-def gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = (-1,1), method:str = 'summation'): #TODO this is the function currently worked on
+def gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:str = 'summation'):
     """
 	**Generate a Gramian angular Field**
 
@@ -348,9 +318,11 @@ def gen_GAF_exec(data:list, size:int or float = 1, sample_range:None or tuple = 
     """
 
     #transform the data into a Gramian Angular Field
-    gaf = GAF(image_size=size,sample_range=sample_range,method=method)
+    gaf = GAF(sample_range=sample_range,method=method)
+    data = np.where(data=='NULL', '0' , data)
+    data = data[:,3:].astype(dtype=float)
     data_gaf = gaf.fit_transform(data)
-    plt.imshow(data_gaf,cmap='rainbow',origin='lower')
+    plt.imshow(data_gaf[0],cmap='rainbow',origin='lower')
     plt.show()
 
 def false_input(path:str):
@@ -393,7 +365,7 @@ def switchoption(n:int,path:str):
             7: npy_to_sql,
             8: npy_to_csv,
             9: gen_GAF,
-            10:exit,
+            0:exit,
         }
     function = switcher.get(n,false_input)
     function(path)
