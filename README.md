@@ -155,7 +155,7 @@ A minimal package for quick data management.
 
 ###gen_GAF_exec
 	```python
-	gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
+	gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation',null_value:str = '0')
 	```
 
 	**Generate a Gramian angular Field**
@@ -168,6 +168,7 @@ A minimal package for quick data management.
 	+ param **data**: as the content of a npy file , type `list`  
 	+ param **sample_range**: as the range the data should be scaled to, type `None` or `tuple`  
 	+ param **method**: as the type of field it should be, type 'summation' or 'difference'  
+	+ param **null_value**: as the number to use instead of NULL values, type str
 
 ##Quality
 

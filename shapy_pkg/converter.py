@@ -297,12 +297,13 @@ def gen_GAF(path:str):
         method = 'summation'
     else:
         method='difference'
-    gen_GAF_exec(np_array,(-1,1), method)
+    null_value=input("Enter the number you want to represent missing/NULL values (Default: 0):\n")
+    gen_GAF_exec(np_array,(-1,1), method,null_value)
 
 
 
 
-def gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:str = 'summation'):
+def gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:str = 'summation',null_value:str='0'):
     """
 	**Generate a Gramian angular Field**
 
@@ -315,11 +316,10 @@ def gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:str = 's
 	param size: this is the size of the square output image, type int or float  
 	param sample_range: as the range the data should be scaled to, type None or tuple  
 	param method: as the type of field it should be, type 'summation' or 'difference' 
+    param **null_value**: as the number to use instead of NULL, type str
     """
-
-    #transform the data into a Gramian Angular Field
     gaf = GAF(sample_range=sample_range,method=method)
-    data = np.where(data=='NULL', '0' , data)
+    data = np.where(data=='NULL', null_value , data)
     data = data[:,3:].astype(dtype=float)
     data_gaf = gaf.fit_transform(data)
     plt.imshow(data_gaf[0],cmap='rainbow',origin='lower')
