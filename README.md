@@ -153,10 +153,17 @@ from the data of a numpy array using the gen_GAF_exec function
 	
 + param **path**: as the absolute path to the npy file, type `str`  
 
+<<<<<<< HEAD
 ### gen_GAF_exec
 ```python
 gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation')
 ```
+=======
+###gen_GAF_exec
+	```python
+	gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:'summation'or'difference' = 'summation',null_value:str = '0')
+	```
+>>>>>>> 0b8a0289775ccecd3616cf5e509f2bea1f696395
 
 **Generate a Gramian angular Field**
 
@@ -165,9 +172,16 @@ out of the data of a numpy array. This function takes different variables to det
 how the Field should be scaled, what its size should be 
 and if it is either a summation or difference Field
 	
+<<<<<<< HEAD
 + param **data**: as the content of a npy file , type `list`  
 + param **sample_range**: as the range the data should be scaled to, type `None` or `tuple`  
 + param **method**: as the type of field it should be, type 'summation' or 'difference'  
+=======
+	+ param **data**: as the content of a npy file , type `list`  
+	+ param **sample_range**: as the range the data should be scaled to, type `None` or `tuple`  
+	+ param **method**: as the type of field it should be, type 'summation' or 'difference'  
+	+ param **null_value**: as the number to use instead of NULL values, type str
+>>>>>>> 0b8a0289775ccecd3616cf5e509f2bea1f696395
 
 ## Quality
 
