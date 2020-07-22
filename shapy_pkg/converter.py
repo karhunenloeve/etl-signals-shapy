@@ -23,10 +23,6 @@ from numpy.lib import recfunctions as rfn
 from pyts.datasets import load_gunpoint
 from mpl_toolkits.axes_grid1 import ImageGrid
 
-
-
-
-
 def zip_to_csv(path:str):
     """
     **Convert a packaged sql file into a csv file**
@@ -271,7 +267,6 @@ def npy_to_csv(path:str):
         for row in np_array:
             data = ','.join(row)
             newfile.write("{0}\n".format(data))
-        
 
 def gen_GAF(path:str):
     """
@@ -299,9 +294,6 @@ def gen_GAF(path:str):
         method='difference'
     null_value=input("Enter the number you want to represent missing/NULL values (Default: 0):\n")
     gen_GAF_exec(np_array,(-1,1), method,null_value)
-
-
-
 
 def gen_GAF_exec(data:list, sample_range:None or tuple = (-1,1), method:str = 'summation',null_value:str='0'):
     """
@@ -370,6 +362,22 @@ def switchoption(n:int,path:str):
     function = switcher.get(n,false_input)
     function(path)
 
+def checkpath(path:str):
+    """
+    **check the path for relativity**
+
+    this function removes any quotation from a path and checks if it is relative or absolute
+    it returns a *cleansed* path being the absolute representation of the given path
+
+    param path: the string to be used as a path, type str    
+    return path: the absolute path, type str  
+    """
+    path=path.replace('"','')
+    path=path.replace("'","")
+    if(os.path.isabs(path)):
+        return path
+    return os.getcwd+path
+
 def main():
     """
 	**Get User input and invoke functions**
@@ -378,6 +386,7 @@ def main():
 	should be invoked and where to find the coresponding file
     """
     path = input("enter path:\n")
+    path_array = os.listdir(path)
     print("to exit (0)\n")
     print("zip_to_csv(1)\n")
     print("zip_to_npy(2)\n")
@@ -389,23 +398,9 @@ def main():
     print("npy_to_csv(8)\n")
     print("gen_GAF(9)\n")
     n = int(input("what do you want to do:"))
-    switchoption(n,path)
 
-def checkpath(path:str):
-    """
-	**check the path for relativity**
-
-	this function removes any quotation from a path and checks if it is relative or absolute
-	it returns a *cleansed* path being the absolute representation of the given path
-
-	param path: the string to be used as a path, type str    
-	return path: the absolute path, type str  
-    """
-    path=path.replace('"','')
-    path=path.replace("'","")
-    if(os.path.isabs(path)):
-        return path
-    return os.getcwd+path
+    for element in path_array:
+        switchoption(n,path + "/" + element)
 
 if __name__ == "__main__":
     main()
